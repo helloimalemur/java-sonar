@@ -7,10 +7,12 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.digital.DigitalState;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.plaf.ComponentInputMapUIResource;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class Sonar {
     Sonar() {
@@ -19,32 +21,33 @@ public class Sonar {
 
     public int test() throws InterruptedException {
         long REJ = 0, startTime = 0, endTime = 0;
+        long REJECTION = 1000;
         int distance = 0;
         //setup pins
         var pi4j = Pi4J.newAutoContext();
 
         var outputPin = pi4j.dout().create(22);
-        outputPin.config().shutdownState(DigitalState.LOW);
+        var inputPin = pi4j.din().create(17);
+//        outputPin.config().shutdownState(DigitalState.LOW);
 
-        var properties = new Properties();
-        properties.put("id", "digital_input");
-        properties.put("address", 17);
-        properties.put("name", "input-pin");
-
-        var config = DigitalInput.newConfigBuilder(pi4j).load(properties).build();
-        var inputPin = pi4j.din().create(config);
+//        var properties = new Properties();
+//        properties.put("id", "digital_input");
+//        properties.put("address", 17);
+//        properties.put("name", "input-pin");
+//
+//        var config = DigitalInput.newConfigBuilder(pi4j).load(properties).build();
+//        var inputPin = pi4j.din().create(config);
 
 
 
         //
         outputPin.state(DigitalState.LOW);
-
         waitMicros(2);
         outputPin.state(DigitalState.HIGH);
         waitMicros(10);
         outputPin.state(DigitalState.LOW);
         //
-        long REJECTION = 1000;
+
         while(inputPin.isLow()) {
             waitNanos(1);
             REJ++;
